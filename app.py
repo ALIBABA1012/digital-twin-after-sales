@@ -198,7 +198,89 @@ if seite == "🚗 Fahrzeugübersicht":
 elif seite == "🔧 Bremszustand & Prognose":
 
     st.title("Bremszustand & Prognose")
-    st.info("Diese Ansicht wird im nächsten Schritt aufgebaut.")
+
+    st.caption(
+        "Darstellung des aktuellen Bremsbelagzustands, "
+        "des bisherigen Verlaufs und der prognostizierten Entwicklung."
+    )
+
+    st.info("Demonstrator – ausschließlich synthetische Fahrzeugdaten")
+
+    # --------------------------------------------------
+    # Aktueller Zustand und Prognose
+    # --------------------------------------------------
+
+    col_current, col_prediction = st.columns(2)
+
+    with col_current:
+        st.subheader("🔧 Aktueller Zustand")
+
+        st.metric(
+            "Bremsbelagzustand",
+            f"{brakes['brake_pad_condition_percent']} %"
+        )
+
+        st.write(f"**Status:** {brakes['status']}")
+        st.write(
+            f"**Messzeitpunkt:** "
+            f"{format_date(brakes['measurement_date'])}"
+        )
+
+    with col_prediction:
+        st.subheader("📈 Prognose")
+
+        st.metric(
+            "Erwarteter Wartungsbedarf",
+            "in ca. 4.000 km"
+        )
+
+        st.write("**Prognosestatus:** Beobachten")
+        st.write(
+            "**Hinweis:** Der Bremsbelagzustand wird "
+            "weiter überwacht."
+        )
+
+    st.divider()
+
+    # --------------------------------------------------
+    # Zustandsverlauf
+    # --------------------------------------------------
+
+    st.subheader("📊 Verlauf des Bremsbelagzustands")
+
+    history_df = pd.DataFrame(data["condition_history"])
+
+    history_df = history_df.rename(
+        columns={
+            "mileage_km": "Kilometerstand",
+            "brake_pad_condition_percent": "Bremsbelagzustand"
+        }
+    )
+
+    history_df = history_df.set_index("Kilometerstand")
+
+    st.line_chart(
+        history_df,
+        use_container_width=True
+    )
+
+    st.caption(
+        "Der Verlauf basiert auf synthetischen Zustandsdaten "
+        "des Demonstrators."
+    )
+
+    st.divider()
+
+    # --------------------------------------------------
+    # Servicebewertung
+    # --------------------------------------------------
+
+    st.subheader("🛠️ Servicebewertung")
+
+    st.success(
+        "Aktuell besteht kein unmittelbarer Servicebedarf. "
+        "Der Bremsbelagzustand sollte weiter beobachtet werden."
+    )
 
 
 # --------------------------------------------------
