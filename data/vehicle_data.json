@@ -1,0 +1,63 @@
+{
+  "vehicle": {
+    "vehicle_id": "DT-001",
+    "model": "Demo Vehicle",
+    "year": 2023,
+    "drivetrain": "Electric",
+    "mileage_km": 42350
+  },
+
+  "customer": {
+    "customer_id": "C-001"
+  },
+
+  "brakes": {
+    "brake_pad_condition_percent": 38,
+    "status": "Normal",
+    "measurement_date": "2026-09-08"
+  },
+
+  "usage": {
+    "driving_profile": "Mixed"
+  },
+
+  "condition_history": [
+    {
+      "mileage_km": 30000,
+      "brake_pad_condition_percent": 65
+    },
+    {
+      "mileage_km": 36000,
+      "brake_pad_condition_percent": 52
+    },
+    {
+      "mileage_km": 42350,
+      "brake_pad_condition_percent": 38
+    }
+  ],
+
+  "service_history": [
+    {
+      "date": "2025-09-15",
+      "mileage_km": 28000,
+      "service_type": "Inspection",
+      "result": "No brake service required"
+    },
+    {
+      "date": "2026-04-10",
+      "mileage_km": 36000,
+      "service_type": "Brake inspection",
+      "result": "Brake condition monitored"
+    }
+  ],
+
+  "prediction": {
+    "remaining_distance_km": null,
+    "predicted_service_mileage_km": null,
+    "predicted_status": null
+  },
+
+  "service": {
+    "recommendation": null
+  }
+}
