@@ -498,14 +498,24 @@ elif seite == "📈 Simulation":
 
     st.subheader("Simulationsparameter")
 
+    st.write(
+        "Wählen Sie die zusätzliche Fahrleistung aus, für die "
+        "der zukünftige Bremsbelagzustand simuliert werden soll."
+    )
+    
     zusaetzliche_km = st.slider(
-        "Zusätzliche Fahrleistung",
+        "Zusätzliche Fahrleistung einstellen",
         min_value=0,
         max_value=5000,
         value=3000,
-        step=500
+        step=500,
+        format="%d km"
     )
-
+    
+    st.markdown(
+        f"**Ausgewählte Fahrleistung: +{format_km(zusaetzliche_km)}**"
+    )
+    
     simulation_starten = st.button(
         "Simulation starten",
         type="primary"
