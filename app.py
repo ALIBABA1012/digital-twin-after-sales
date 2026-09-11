@@ -290,9 +290,187 @@ elif seite == "🔧 Bremszustand & Prognose":
 elif seite == "📈 Simulation":
 
     st.title("Simulation der Zustandsentwicklung")
-    st.info("Diese Ansicht wird anschließend aufgebaut.")
 
+    st.caption(
+        "Vereinfachte Simulation der zukünftigen Entwicklung "
+        "des Bremsbelagzustands."
+    )
 
+    st.info(
+        "Die Simulation basiert auf synthetischen Annahmen des Demonstrators "
+        "und stellt kein reales physikalisches Verschleißmodell dar."
+    )
+
+    # --------------------------------------------------
+    # Simulationsparameter
+    # --------------------------------------------------
+
+    VERSCHLEISS_PRO_1000_KM = 5
+
+    GRENZE_NORMAL = 30
+    GRENZE_BEOBACHTEN = 20
+    GRENZE_SERVICE = 10
+
+    aktuelle_km = vehicle["mileage_km"]
+    aktueller_zustand = brakes["brake_pad_condition_percent"]
+
+    st.subheader("Simulationsparameter")
+
+    zusaetzliche_km = st.slider(
+        "Zusätzliche Fahrleistung",
+        min_value=0,
+        max_value=5000,
+        value=3000,
+        step=500
+    )
+
+    simulation_starten = st.button(
+        "Simulation starten",
+        type="primary"
+    )
+
+    # --------------------------------------------------
+    # Simulation
+    # --------------------------------------------------
+
+    if simulation_starten:
+
+        verschleiss = (
+            zusaetzliche_km / 1000
+        ) * VERSCHLEISS_PRO_1000_KM
+
+        simulierter_zustand = max(
+            0,
+            aktueller_zustand - verschleiss
+        )
+
+        simulierter_km_stand = (
+            aktuelle_km + zusaetzliche_km
+        )
+
+        # Status bestimmen
+        if simulierter_zustand > GRENZE_NORMAL:
+            simulierter_status = "Normal"
+
+        elif simulierter_zustand > GRENZE_BEOBACHTEN:
+            simulierter_status = "Beobachten"
+
+        elif simulierter_zustand > GRENZE_SERVICE:
+            simulierter_status = "Service empfohlen"
+
+        else:
+            simulierter_status = "Kritisch"
+
+        st.divider()
+
+        # --------------------------------------------------
+        # Vorher-Nachher-Vergleich
+        # --------------------------------------------------
+
+        st.subheader("Ergebnis der Simulation")
+
+        col_before, col_after = st.columns(2)
+
+        with col_before:
+            st.markdown("### Vor Simulation")
+
+            st.metric(
+                "Kilometerstand",
+                format_km(aktuelle_km)
+            )
+
+            st.metric(
+                "Bremsbelagzustand",
+                f"{aktueller_zustand:.0f} %"
+            )
+
+            st.success(
+                f"Status: {brakes['status']}"
+            )
+
+        with col_after:
+            st.markdown("### Nach Simulation")
+
+            st.metric(
+                "Kilometerstand",
+                format_km(simulierter_km_stand)
+            )
+
+            st.metric(
+                "Bremsbelagzustand",
+                f"{simulierter_zustand:.0f} %"
+            )
+
+            if simulierter_status == "Normal":
+                st.success(
+                    f"Status: {simulierter_status}"
+                )
+
+            elif simulierter_status == "Beobachten":
+                st.warning(
+                    f"Status: {simulierter_status}"
+                )
+
+            elif simulierter_status == "Service empfohlen":
+                st.warning(
+                    f"Status: {simulierter_status}"
+                )
+
+            else:
+                st.error(
+                    f"Status: {simulierter_status}"
+                )
+
+        st.divider()
+
+        # --------------------------------------------------
+        # Servicebewertung
+        # --------------------------------------------------
+
+        st.subheader("Servicebewertung")
+
+        if simulierter_status == "Normal":
+
+            st.success(
+                "Der simulierte Bremsbelagzustand befindet sich "
+                "weiterhin im normalen Bereich."
+            )
+
+        elif simulierter_status == "Beobachten":
+
+            st.warning(
+                "Der Bremsbelagzustand sollte weiter beobachtet werden. "
+                "Aktuell besteht noch kein unmittelbarer Servicebedarf."
+            )
+
+        elif simulierter_status == "Service empfohlen":
+
+            st.warning(
+                "Die simulierte Zustandsentwicklung weist auf einen "
+                "bevorstehenden Wartungsbedarf hin."
+            )
+
+            st.write(
+                "**Empfohlene Maßnahme:** "
+                "Bremsbeläge bei einem Werkstatttermin prüfen."
+            )
+
+        else:
+
+            st.error(
+                "Die simulierte Zustandsentwicklung erreicht einen "
+                "kritischen Bereich."
+            )
+
+            st.write(
+                "**Empfohlene Maßnahme:** "
+                "Zeitnahe Prüfung der Bremsbeläge."
+            )
+
+        st.caption(
+            "Die verwendete Verschleißrate und die Statusgrenzen sind "
+            "synthetische Annahmen des Demonstrators."
+        )
 # --------------------------------------------------
 # SCREEN 4 – SERVICEINFORMATION
 # --------------------------------------------------
