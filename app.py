@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
 # --------------------------------------------------
@@ -263,30 +264,111 @@ elif seite == "🔧 Bremszustand & Prognose":
     st.divider()
 
     # --------------------------------------------------
-    # Zustandsverlauf
+    # Zustandsverlauf und Prognose
     # --------------------------------------------------
 
-    st.subheader("📊 Verlauf des Bremsbelagzustands")
+    st.subheader("📊 Verlauf und Prognose des Bremsbelagzustands")
 
-    history_df = pd.DataFrame(data["condition_history"])
+    # Historische Werte
+    historische_km = [
+        punkt["mileage_km"]
+        for punkt in data["condition_history"]
+    ]
 
-    history_df = history_df.rename(
-        columns={
-            "mileage_km": "Kilometerstand",
-            "brake_pad_condition_percent": "Bremsbelagzustand"
-        }
+    historische_zustaende = [
+        punkt["brake_pad_condition_percent"]
+        for punkt in data["condition_history"]
+    ]
+
+    # Vereinfachte synthetische Prognose
+    VERSCHLEISS_PRO_1000_KM = 5
+
+    prognose_km = [
+        vehicle["mileage_km"],
+        vehicle["mileage_km"] + 1000,
+        vehicle["mileage_km"] + 2000,
+        vehicle["mileage_km"] + 3000,
+        vehicle["mileage_km"] + 4000,
+        vehicle["mileage_km"] + 5000
+    ]
+
+    prognose_zustaende = [
+        max(
+            0,
+            brakes["brake_pad_condition_percent"]
+            - ((km - vehicle["mileage_km"]) / 1000)
+            * VERSCHLEISS_PRO_1000_KM
+        )
+        for km in prognose_km
+    ]
+
+    fig = go.Figure()
+
+    # Historischer Verlauf
+    fig.add_trace(
+        go.Scatter(
+            x=historische_km,
+            y=historische_zustaende,
+            mode="lines+markers+text",
+            name="Historischer Verlauf",
+            text=[
+                f"{km:,.0f} km / {zustand:.0f} %"
+                .replace(",", ".")
+                for km, zustand in zip(
+                    historische_km,
+                    historische_zustaende
+                )
+            ],
+            textposition="top center"
+        )
     )
 
-    history_df = history_df.set_index("Kilometerstand")
+    # Prognose
+    fig.add_trace(
+        go.Scatter(
+            x=prognose_km,
+            y=prognose_zustaende,
+            mode="lines+markers",
+            name="Prognose",
+            line=dict(dash="dash")
+        )
+    )
 
-    st.line_chart(
-        history_df,
+    # Aktueller Zustand markieren
+    fig.add_annotation(
+        x=vehicle["mileage_km"],
+        y=brakes["brake_pad_condition_percent"],
+        text="Aktueller Zustand",
+        showarrow=True,
+        arrowhead=2,
+        ax=0,
+        ay=-40
+    )
+
+    fig.update_layout(
+        xaxis_title="Kilometerstand [km]",
+        yaxis_title="Bremsbelagzustand [%]",
+        yaxis=dict(
+            range=[0, 100]
+        ),
+        legend_title="Darstellung",
+        margin=dict(
+            l=20,
+            r=20,
+            t=30,
+            b=20
+        )
+    )
+
+    st.plotly_chart(
+        fig,
         use_container_width=True
     )
 
     st.caption(
-        "Der Verlauf basiert auf synthetischen Zustandsdaten "
-        "des Demonstrators."
+        "Der historische Verlauf und die Prognose basieren auf "
+        "synthetischen Daten und einer vereinfachten "
+        "Simulationslogik des Demonstrators."
     )
 
     st.divider()
