@@ -23,6 +23,26 @@ vehicle = data["vehicle"]
 brakes = data["brakes"]
 service_history = data["service_history"]
 
+# --------------------------------------------------
+# Simulationszustand speichern
+# --------------------------------------------------
+
+if "simuliert" not in st.session_state:
+    st.session_state.simuliert = False
+
+if "simulierter_zustand" not in st.session_state:
+    st.session_state.simulierter_zustand = brakes[
+        "brake_pad_condition_percent"
+    ]
+
+if "simulierter_status" not in st.session_state:
+    st.session_state.simulierter_status = brakes["status"]
+
+if "simulierter_km_stand" not in st.session_state:
+    st.session_state.simulierter_km_stand = vehicle["mileage_km"]
+
+if "zusaetzliche_km" not in st.session_state:
+    st.session_state.zusaetzliche_km = 0
 
 # --------------------------------------------------
 # Hilfsfunktionen
@@ -361,6 +381,13 @@ elif seite == "📈 Simulation":
         else:
             simulierter_status = "Kritisch"
 
+        # Simulationsergebnis für andere Ansichten speichern
+        st.session_state.simuliert = True
+        st.session_state.simulierter_zustand = simulierter_zustand
+        st.session_state.simulierter_status = simulierter_status
+        st.session_state.simulierter_km_stand = simulierter_km_stand
+        st.session_state.zusaetzliche_km = zusaetzliche_km
+
         st.divider()
 
         # --------------------------------------------------
@@ -478,4 +505,162 @@ elif seite == "📈 Simulation":
 elif seite == "👤 Serviceinformation":
 
     st.title("Serviceinformation")
-    st.info("Diese Ansicht wird anschließend aufgebaut.")
+
+    st.caption(
+        "Vereinfachte Darstellung des Fahrzeugzustands und "
+        "des daraus abgeleiteten Servicebedarfs für die "
+        "Kommunikation mit dem Kunden."
+    )
+
+    st.info("Demonstrator – ausschließlich synthetische Fahrzeugdaten")
+
+    # --------------------------------------------------
+    # Daten auswählen
+    # --------------------------------------------------
+
+    if st.session_state.simuliert:
+        zustand = st.session_state.simulierter_zustand
+        status = st.session_state.simulierter_status
+        kilometerstand = st.session_state.simulierter_km_stand
+
+        st.success(
+            "Die zuletzt durchgeführte Simulation wird "
+            "für diese Serviceinformation verwendet."
+        )
+
+    else:
+        zustand = brakes["brake_pad_condition_percent"]
+        status = brakes["status"]
+        kilometerstand = vehicle["mileage_km"]
+
+        st.warning(
+            "Es wurde noch keine Simulation durchgeführt. "
+            "Dargestellt wird der aktuelle Fahrzeugzustand."
+        )
+
+    # --------------------------------------------------
+    # Serviceübersicht
+    # --------------------------------------------------
+
+    st.subheader("🔧 Bremsbelagzustand")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Kilometerstand",
+            format_km(kilometerstand)
+        )
+
+    with col2:
+        st.metric(
+            "Bremsbelagzustand",
+            f"{zustand:.0f} %"
+        )
+
+    with col3:
+        st.metric(
+            "Servicebewertung",
+            status
+        )
+
+    st.divider()
+
+    # --------------------------------------------------
+    # Verständliche Kundeninformation
+    # --------------------------------------------------
+
+    st.subheader("Kundeninformation")
+
+    if status == "Normal":
+
+        st.success("Bremsbelagzustand: Normal")
+
+        st.markdown("### Was wurde festgestellt?")
+        st.write(
+            "Der aktuelle Bremsbelagzustand befindet sich "
+            "im normalen Bereich."
+        )
+
+        st.markdown("### Besteht Handlungsbedarf?")
+        st.write(
+            "Aktuell besteht kein unmittelbarer Servicebedarf."
+        )
+
+        st.markdown("### Was wird empfohlen?")
+        st.write(
+            "Der Bremsbelagzustand wird im weiteren Fahrzeugbetrieb "
+            "weiter beobachtet."
+        )
+
+    elif status == "Beobachten":
+
+        st.warning("Bremsbelagzustand: Beobachten")
+
+        st.markdown("### Was wurde festgestellt?")
+        st.write(
+            "Der Bremsbelagzustand hat sich gegenüber dem "
+            "Ausgangszustand verringert."
+        )
+
+        st.markdown("### Besteht Handlungsbedarf?")
+        st.write(
+            "Aktuell besteht noch kein unmittelbarer Servicebedarf. "
+            "Die weitere Entwicklung sollte jedoch beobachtet werden."
+        )
+
+        st.markdown("### Was wird empfohlen?")
+        st.write(
+            "Der Bremsbelagzustand sollte beim nächsten "
+            "Service erneut geprüft werden."
+        )
+
+    elif status == "Service empfohlen":
+
+        st.warning("Bremsbelagzustand: Service empfohlen")
+
+        st.markdown("### Was wurde festgestellt?")
+        st.write(
+            "Die simulierte Zustandsentwicklung weist auf einen "
+            "bevorstehenden Wartungsbedarf der Bremsbeläge hin."
+        )
+
+        st.markdown("### Besteht Handlungsbedarf?")
+        st.write(
+            "Eine Überprüfung der Bremsbeläge wird empfohlen."
+        )
+
+        st.markdown("### Was wird empfohlen?")
+        st.write(
+            "Die Bremsbeläge sollten bei einem Werkstatttermin "
+            "fachgerecht geprüft werden."
+        )
+
+    else:
+
+        st.error("Bremsbelagzustand: Kritisch")
+
+        st.markdown("### Was wurde festgestellt?")
+        st.write(
+            "Die simulierte Zustandsentwicklung hat einen "
+            "kritischen Bereich erreicht."
+        )
+
+        st.markdown("### Besteht Handlungsbedarf?")
+        st.write(
+            "Eine zeitnahe technische Prüfung wird empfohlen."
+        )
+
+        st.markdown("### Was wird empfohlen?")
+        st.write(
+            "Die Bremsbeläge sollten zeitnah in einer Werkstatt "
+            "fachgerecht überprüft werden."
+        )
+
+    st.divider()
+
+    st.caption(
+        "Die dargestellte Serviceinformation basiert auf "
+        "synthetischen Daten und einer vereinfachten "
+        "Simulationslogik des Demonstrators."
+    )
