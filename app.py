@@ -248,17 +248,56 @@ elif seite == "🔧 Bremszustand & Prognose":
         )
 
     with col_prediction:
-        st.subheader("📈 Prognose")
+    st.subheader("📈 Prognose")
+
+    VERSCHLEISS_PRO_1000_KM = 5
+    GRENZE_SERVICE = 20
+
+    aktueller_zustand = brakes["brake_pad_condition_percent"]
+
+    if aktueller_zustand > GRENZE_SERVICE:
+        benoetigter_verschleiss = (
+            aktueller_zustand - GRENZE_SERVICE
+        )
+
+        wartungsbedarf_km = (
+            benoetigter_verschleiss
+            / VERSCHLEISS_PRO_1000_KM
+        ) * 1000
+
+        wartungsbedarf_km = round(
+            wartungsbedarf_km / 500
+        ) * 500
 
         st.metric(
             "Erwarteter Wartungsbedarf",
-            "in ca. 4.000 km"
+            f"in ca. {format_km(wartungsbedarf_km)}"
         )
 
-        st.write("**Prognosestatus:** Beobachten")
         st.write(
-            "**Hinweis:** Der Bremsbelagzustand wird "
-            "weiter überwacht."
+            "**Prognosestatus:** "
+            "Zukünftiger Servicebedarf erwartet"
+        )
+
+        st.write(
+            "**Hinweis:** Bei Fortsetzung der vereinfachten "
+            "synthetischen Zustandsentwicklung wird ein "
+            "Servicebedarf prognostiziert."
+        )
+
+    else:
+        st.metric(
+            "Erwarteter Wartungsbedarf",
+            "Servicebereich erreicht"
+        )
+
+        st.write(
+            "**Prognosestatus:** Service empfohlen"
+        )
+
+        st.write(
+            "**Hinweis:** Der Bremsbelagzustand befindet sich "
+            "bereits im definierten Servicebereich."
         )
 
     st.divider()
