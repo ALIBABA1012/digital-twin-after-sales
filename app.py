@@ -766,8 +766,13 @@ elif seite == "👤 Serviceinformation":
     
         with spalte:
     
-            st.markdown(
-                f"**{symbol} {status_name}**"
+           st.markdown(
+                f"""
+                <div style="font-size:22px; font-weight:600;">
+                    {symbol} {status_name}
+                </div>
+                """,
+                unsafe_allow_html=True
             )
     
             if status == status_name:
