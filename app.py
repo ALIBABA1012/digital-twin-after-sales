@@ -361,9 +361,36 @@ elif seite == "🔧 Bremszustand & Prognose":
     )
 
     fig.update_layout(
-        xaxis_title="Kilometerstand [km]",
-        yaxis_title="Bremsbelagzustand [%]",
+        xaxis=dict(
+            title="Kilometerstand [km]",
+            tickmode="array",
+            tickvals=[
+                30000,
+                32000,
+                34000,
+                36000,
+                38000,
+                40000,
+                42000,
+                44000,
+                46000,
+                48000
+            ],
+            ticktext=[
+                "30.000",
+                "32.000",
+                "34.000",
+                "36.000",
+                "38.000",
+                "40.000",
+                "42.000",
+                "44.000",
+                "46.000",
+                "48.000"
+            ]
+        ),
         yaxis=dict(
+            title="Bremsbelagzustand [%]",
             range=[0, 100]
         ),
         legend_title="Darstellung",
