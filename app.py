@@ -275,14 +275,13 @@ elif seite == "🔧 Bremszustand & Prognose":
             )
     
             st.write(
-                "**Prognosestatus:** "
-                "Zukünftiger Servicebedarf erwartet"
+                "**Prognosestatus:** Servicebedarf absehbar"
             )
-    
+            
             st.write(
-                "**Hinweis:** Bei Fortsetzung der vereinfachten "
-                "synthetischen Zustandsentwicklung wird ein "
-                "Servicebedarf prognostiziert."
+                f"**Hinweis:** Bei gleichbleibender Zustandsentwicklung "
+                f"wird in ca. {format_km(wartungsbedarf_km)} "
+                f"ein Servicebedarf erwartet."
             )
     
         else:
