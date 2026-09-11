@@ -761,12 +761,12 @@ elif seite == "👤 Serviceinformation":
     ]
     
     spalten = st.columns(4)
-    
+
     for spalte, (status_name, symbol) in zip(spalten, status_stufen):
     
         with spalte:
     
-           st.markdown(
+            st.markdown(
                 f"""
                 <div style="font-size:22px; font-weight:600;">
                     {symbol} {status_name}
@@ -774,6 +774,7 @@ elif seite == "👤 Serviceinformation":
                 """,
                 unsafe_allow_html=True
             )
+    
             if status == status_name:
                 st.caption("▲ Aktueller Status")
     
