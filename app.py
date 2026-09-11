@@ -774,7 +774,6 @@ elif seite == "👤 Serviceinformation":
                 """,
                 unsafe_allow_html=True
             )
-    
             if status == status_name:
                 st.caption("▲ Aktueller Status")
     
