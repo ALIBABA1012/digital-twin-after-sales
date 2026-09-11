@@ -766,16 +766,12 @@ elif seite == "👤 Serviceinformation":
     
         with spalte:
     
-            if status == status_name:
-                st.markdown(
-                    f"### {symbol} {status_name}"
-                )
-                st.markdown("**▲ Aktueller Status**")
+            st.markdown(
+                f"**{symbol} {status_name}**"
+            )
     
-            else:
-                st.markdown(
-                    f"### {symbol} {status_name}"
-                )
+            if status == status_name:
+                st.caption("▲ Aktueller Status")
     
     st.caption(
         "Die dargestellten Statusstufen basieren auf den "
