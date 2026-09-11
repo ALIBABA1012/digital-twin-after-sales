@@ -309,17 +309,13 @@ elif seite == "🔧 Bremszustand & Prognose":
         go.Scatter(
             x=historische_km,
             y=historische_zustaende,
-            mode="lines+markers+text",
+            mode="lines+markers",
             name="Historischer Verlauf",
-            text=[
-                f"{km:,.0f} km / {zustand:.0f} %"
-                .replace(",", ".")
-                for km, zustand in zip(
-                    historische_km,
-                    historische_zustaende
-                )
-            ],
-            textposition="top center"
+            hovertemplate=(
+                "Kilometerstand: %{x:,.0f} km<br>"
+                "Bremsbelagzustand: %{y:.0f} %"
+                "<extra></extra>"
+            )
         )
     )
 
@@ -330,9 +326,10 @@ elif seite == "🔧 Bremszustand & Prognose":
             y=prognose_zustaende,
             mode="lines+markers",
             name="Prognose",
-            line=dict(dash="dash"),
+            line=dict(
+                dash="dash"
+            ),
             hovertemplate=(
-                "<b>Prognose</b><br>"
                 "Kilometerstand: %{x:,.0f} km<br>"
                 "Bremsbelagzustand: %{y:.0f} %"
                 "<extra></extra>"
@@ -348,11 +345,14 @@ elif seite == "🔧 Bremszustand & Prognose":
             mode="markers",
             name="Aktueller Zustand",
             marker=dict(
-                size=14,
-                symbol="circle"
+                size=15,
+                color="green",
+                line=dict(
+                    width=2,
+                    color="white"
+                )
             ),
             hovertemplate=(
-                "<b>Aktueller Zustand</b><br>"
                 "Kilometerstand: %{x:,.0f} km<br>"
                 "Bremsbelagzustand: %{y:.0f} %"
                 "<extra></extra>"
