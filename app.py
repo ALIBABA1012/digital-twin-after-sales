@@ -330,19 +330,34 @@ elif seite == "🔧 Bremszustand & Prognose":
             y=prognose_zustaende,
             mode="lines+markers",
             name="Prognose",
-            line=dict(dash="dash")
+            line=dict(dash="dash"),
+            hovertemplate=(
+                "<b>Prognose</b><br>"
+                "Kilometerstand: %{x:,.0f} km<br>"
+                "Bremsbelagzustand: %{y:.0f} %"
+                "<extra></extra>"
+            )
         )
     )
 
-    # Aktueller Zustand markieren
-    fig.add_annotation(
-        x=vehicle["mileage_km"],
-        y=brakes["brake_pad_condition_percent"],
-        text="Aktueller Zustand",
-        showarrow=True,
-        arrowhead=2,
-        ax=0,
-        ay=-40
+    # Aktuellen Zustand hervorheben
+    fig.add_trace(
+        go.Scatter(
+            x=[vehicle["mileage_km"]],
+            y=[brakes["brake_pad_condition_percent"]],
+            mode="markers",
+            name="Aktueller Zustand",
+            marker=dict(
+                size=14,
+                symbol="circle"
+            ),
+            hovertemplate=(
+                "<b>Aktueller Zustand</b><br>"
+                "Kilometerstand: %{x:,.0f} km<br>"
+                "Bremsbelagzustand: %{y:.0f} %"
+                "<extra></extra>"
+            )
+        )
     )
 
     fig.update_layout(
