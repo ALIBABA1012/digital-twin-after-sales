@@ -128,7 +128,7 @@ if seite == "🚗 Fahrzeugübersicht":
 
     with col3:
         st.metric(
-            "Letzte Aktualisierung",
+            "Letzte Zustandsmessung",
             format_date(brakes["measurement_date"])
         )
 
