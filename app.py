@@ -717,25 +717,71 @@ elif seite == "👤 Serviceinformation":
     st.subheader("🔧 Bremsbelagzustand")
 
     col1, col2, col3 = st.columns(3)
-
+    
     with col1:
         st.metric(
             "Kilometerstand",
             format_km(kilometerstand)
         )
-
+    
     with col2:
         st.metric(
             "Bremsbelagzustand",
             f"{zustand:.0f} %"
         )
-
+    
     with col3:
-        st.metric(
-            "Servicebewertung",
-            status
-        )
+        st.write("**Servicebewertung**")
+    
+        if status == "Normal":
+            st.success("🟢 Normal")
+    
+        elif status == "Beobachten":
+            st.warning("🟡 Beobachten")
+    
+        elif status == "Service empfohlen":
+            st.warning("🟠 Service empfohlen")
+    
+        else:
+            st.error("🔴 Kritisch")
+    
+    st.divider()
 
+    # --------------------------------------------------
+    # Statusskala
+    # --------------------------------------------------
+    
+    st.subheader("Statusübersicht")
+    
+    status_stufen = [
+        ("Normal", "🟢"),
+        ("Beobachten", "🟡"),
+        ("Service empfohlen", "🟠"),
+        ("Kritisch", "🔴")
+    ]
+    
+    spalten = st.columns(4)
+    
+    for spalte, (status_name, symbol) in zip(spalten, status_stufen):
+    
+        with spalte:
+    
+            if status == status_name:
+                st.markdown(
+                    f"### {symbol} {status_name}"
+                )
+                st.markdown("**▲ Aktueller Status**")
+    
+            else:
+                st.markdown(
+                    f"### {symbol} {status_name}"
+                )
+    
+    st.caption(
+        "Die dargestellten Statusstufen basieren auf den "
+        "synthetischen Annahmen des Demonstrators."
+    )
+    
     st.divider()
 
     # --------------------------------------------------
