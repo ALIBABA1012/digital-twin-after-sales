@@ -154,7 +154,7 @@ if seite == "🚗 Fahrzeugübersicht":
         st.subheader("🔧 Aktueller Bremszustand")
 
         st.metric(
-            "Restzustand Bremsbelag",
+            "Bremsbelagzustand",
             f"{brakes['brake_pad_condition_percent']} %"
         )
 
