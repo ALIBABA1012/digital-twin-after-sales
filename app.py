@@ -639,7 +639,7 @@ elif seite == "📈 Simulation":
 
             st.warning(
                 "Der Bremsbelagzustand sollte weiter beobachtet werden. "
-                "Aktuell besteht noch kein unmittelbarer Servicebedarf."
+                "Bei weiterer Zustandsverschlechterung kann ein Servicebedarf entstehen."
             )
 
         elif simulierter_status == "Service empfohlen":
