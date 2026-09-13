@@ -197,7 +197,7 @@ if seite == "🚗 Fahrzeugübersicht":
         "No brake service required":
             "Kein Bremsenservice erforderlich",
         "Brake condition monitored":
-            "Bremszustand weiter beobachten"
+            "Bremszustand unauffällig"
     })
 
     st.dataframe(
