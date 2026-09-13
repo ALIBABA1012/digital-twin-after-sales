@@ -84,7 +84,7 @@ st.sidebar.divider()
 st.sidebar.write("**Aktueller Status**")
 st.sidebar.success(f"● {brakes['status']}")
 
-st.sidebar.caption("Demonstrator mit synthetischen Fahrzeugdaten")
+st.sidebar.caption("Synthetische Fahrzeugdaten")
 
 
 # --------------------------------------------------
