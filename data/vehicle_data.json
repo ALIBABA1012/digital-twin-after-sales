@@ -1,7 +1,7 @@
 {
   "vehicle": {
     "vehicle_id": "DT-001",
-    "model": "Demo Vehicle",
+    "model": "Demonstrationsfahrzeug",
     "year": 2023,
     "drivetrain": "Electric",
     "mileage_km": 42350
