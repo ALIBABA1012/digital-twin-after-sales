@@ -461,7 +461,7 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     st.success(
         "Aktuell besteht kein unmittelbarer Servicebedarf. "
-        "Bei gleichbleibender Zustandsentwicklung ist jedoch in 3.500 km mit einem Servicebedarf zu rechnen."
+        "Bei gleichbleibender Zustandsentwicklung ist jedoch in 4.000 km mit einem Servicebedarf zu rechnen."
     )
 
 
