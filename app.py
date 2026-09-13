@@ -266,8 +266,8 @@ elif seite == "🔧 Bremszustand & Prognose":
             ) * 1000
     
             wartungsbedarf_km = round(
-                wartungsbedarf_km / 500
-            ) * 500
+                wartungsbedarf_km / 1000
+            ) * 1000
     
             st.metric(
                 "Erwarteter Wartungsbedarf",
