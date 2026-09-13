@@ -461,7 +461,7 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     st.success(
         "Aktuell besteht kein unmittelbarer Servicebedarf. "
-        "Der Bremsbelagzustand sollte weiter beobachtet werden."
+        "Bei gleichbleibender Zustandsentwicklung ist jedoch in 3.500 km mit einem Servicebedarf zu rechnen."
     )
 
 
