@@ -748,44 +748,6 @@ elif seite == "👤 Serviceinformation":
     st.divider()
 
     # --------------------------------------------------
-    # Statusskala
-    # --------------------------------------------------
-    
-    st.subheader("Statusübersicht")
-    
-    status_stufen = [
-        ("Normal", "🟢"),
-        ("Beobachten", "🟡"),
-        ("Service empfohlen", "🟠"),
-        ("Kritisch", "🔴")
-    ]
-    
-    spalten = st.columns(4)
-
-    for spalte, (status_name, symbol) in zip(spalten, status_stufen):
-    
-        with spalte:
-    
-            st.markdown(
-                f"""
-                <div style="font-size:22px; font-weight:600;">
-                    {symbol} {status_name}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-    
-            if status == status_name:
-                st.caption("▲ Aktueller Status")
-    
-    st.caption(
-        "Die dargestellten Statusstufen basieren auf den "
-        "synthetischen Annahmen des Demonstrators."
-    )
-    
-    st.divider()
-
-    # --------------------------------------------------
     # Verständliche Kundeninformation
     # --------------------------------------------------
 
