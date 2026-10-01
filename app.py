@@ -1,4 +1,5 @@
 import json
+import time
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -23,6 +24,25 @@ with open("data/vehicle_data.json", "r", encoding="utf-8") as file:
 vehicle = data["vehicle"]
 brakes = data["brakes"]
 service_history = data["service_history"]
+
+# --------------------------------------------------
+# Digital-Twin-Zustand initialisieren
+# --------------------------------------------------
+
+if "twin_state" not in st.session_state:
+    st.session_state.twin_state = {
+        "mileage_km": float(vehicle["mileage_km"]),
+        "speed_kmh": 0,
+        "brake_condition_percent": float(
+            brakes["brake_pad_condition_percent"]
+        ),
+        "operating_state": "Stillstand",
+        "sync_status": "Synchronisiert",
+        "last_update": time.time()
+    }
+
+if "fahrt_aktiv" not in st.session_state:
+    st.session_state.fahrt_aktiv = False
 
 # --------------------------------------------------
 # Simulationszustand speichern
@@ -57,6 +77,33 @@ def format_date(date_value):
     year, month, day = date_value.split("-")
     return f"{day}.{month}.{year}"
 
+def update_twin_state():
+    """Aktualisiert den Digital-Twin-Zustand während der Demonstrationsfahrt."""
+
+    if not st.session_state.fahrt_aktiv:
+        return
+
+    twin = st.session_state.twin_state
+
+    # Beschleunigte synthetische Demonstrationsfahrt
+    twin["speed_kmh"] = 72
+    twin["operating_state"] = "Fahrt"
+
+    # Pro Aktualisierung werden 100 km simuliert.
+    simulated_distance = 100
+
+    twin["mileage_km"] += simulated_distance
+
+    # Synthetische Verschleißlogik:
+    # 5 Prozentpunkte je 1.000 km
+    brake_wear = (simulated_distance / 1000) * 5
+
+    twin["brake_condition_percent"] = max(
+        0,
+        twin["brake_condition_percent"] - brake_wear
+    )
+
+    twin["last_update"] = time.time()
 
 # --------------------------------------------------
 # Navigation
@@ -93,6 +140,12 @@ st.sidebar.caption("Synthetische Fahrzeugdaten")
 
 if seite == "🚗 Fahrzeugübersicht":
 
+    # Laufenden Digital Twin aktualisieren
+    if st.session_state.fahrt_aktiv:
+        update_twin_state()
+
+    twin = st.session_state.twin_state
+    
     st.title("Digital Twin – Automotive After-Sales")
 
     st.caption(
@@ -101,6 +154,40 @@ if seite == "🚗 Fahrzeugübersicht":
     )
 
     st.info("Demonstrator – ausschließlich synthetische Fahrzeugdaten")
+
+    st.subheader("🔄 Digital-Twin-Synchronisation")
+
+    col_live, col_operation, col_controls = st.columns([2, 2, 2])
+
+    with col_live:
+        if st.session_state.fahrt_aktiv:
+            st.success("● LIVE – Digital Twin synchronisiert")
+        else:
+            st.info("● BEREIT – Fahrzeug im Stillstand")
+
+    with col_operation:
+        st.metric(
+            "Betriebszustand",
+            twin["operating_state"]
+        )
+
+    with col_controls:
+        if not st.session_state.fahrt_aktiv:
+            if st.button("▶ Fahrt starten", type="primary"):
+                st.session_state.fahrt_aktiv = True
+                st.rerun()
+        else:
+            if st.button("■ Fahrt stoppen"):
+                st.session_state.fahrt_aktiv = False
+                twin["speed_kmh"] = 0
+                twin["operating_state"] = "Stillstand"
+                st.rerun()
+
+    st.caption(
+        "Simulierter Live-Datenstrom – Die kontinuierliche "
+        "Datenübertragung eines realen Fahrzeugs wird im Demonstrator "
+        "durch synthetisch erzeugte Fahrzeugdaten simuliert."
+    )
 
     # Fahrzeug und Gesamtstatus
     col_vehicle, col_status = st.columns([3, 1])
@@ -118,19 +205,19 @@ if seite == "🚗 Fahrzeugübersicht":
     with col1:
         st.metric(
             "Kilometerstand",
-            format_km(vehicle["mileage_km"])
+            format_km(twin["mileage_km"])
         )
 
     with col2:
         st.metric(
-            "Bremsbelagzustand",
-            f"{brakes['brake_pad_condition_percent']} %"
+            "Geschwindigkeit",
+            f"{twin['speed_kmh']} km/h"
         )
 
     with col3:
         st.metric(
-            "Letzte Zustandsmessung",
-            format_date(brakes["measurement_date"])
+            "Bremsbelagzustand",
+            f"{twin['brake_condition_percent']:.1f} %"
         )
 
     st.divider()
@@ -210,6 +297,11 @@ if seite == "🚗 Fahrzeugübersicht":
         "Die dargestellten Fahrzeug-, Zustands- und Servicedaten "
         "sind synthetische Daten des Demonstrators."
     )
+
+    # Automatische Aktualisierung während der Fahrt
+    if st.session_state.fahrt_aktiv:
+        time.sleep(1)
+        st.rerun()
 
 
 # --------------------------------------------------
