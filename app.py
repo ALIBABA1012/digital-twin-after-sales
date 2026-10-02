@@ -160,6 +160,27 @@ def show_vehicle_3d():
             height: 500px;
             background-color: transparent;
         }}
+
+        .brake-hotspot {{
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid white;
+            background: #d32f2f;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+        
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+        }}
+
+        .brake-hotspot:hover {{
+            transform: scale(1.15);
+        }}
     </style>
 
     <model-viewer
@@ -172,6 +193,14 @@ def show_vehicle_3d():
         camera-orbit="45deg 75deg auto"
         min-camera-orbit="-180deg 60deg auto"
         max-camera-orbit="180deg 90deg auto">
+    
+        <button
+            class="brake-hotspot"
+            slot="hotspot-brake-front"
+            data-position="0.85m 0.35m 1.55m"
+            data-normal="0m 0m 1m">
+            🔧
+        </button>
     </model-viewer>
     """
 
