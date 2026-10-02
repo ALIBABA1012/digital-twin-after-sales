@@ -57,6 +57,16 @@ if "twin_state" not in st.session_state:
 if "fahrt_aktiv" not in st.session_state:
     st.session_state.fahrt_aktiv = False
 
+if "twin_history" not in st.session_state:
+    st.session_state.twin_history = [
+        {
+            "mileage_km": st.session_state.twin_state["mileage_km"],
+            "brake_condition_percent":
+                st.session_state.twin_state["brake_condition_percent"],
+            "speed_kmh": st.session_state.twin_state["speed_kmh"]
+        }
+    ]
+
 # --------------------------------------------------
 # Simulationszustand speichern
 # --------------------------------------------------
@@ -120,6 +130,15 @@ def update_twin_state():
 
     twin["status"] = bestimme_status(
         twin["brake_condition_percent"]
+    )
+
+    st.session_state.twin_history.append(
+        {
+            "mileage_km": twin["mileage_km"],
+            "brake_condition_percent":
+                twin["brake_condition_percent"],
+            "speed_kmh": twin["speed_kmh"]
+        }
     )
     
 def bestimme_status(zustand):
@@ -651,6 +670,57 @@ if seite == "🚗 Fahrzeugübersicht":
             "Die markierten Radbereiche repräsentieren die "
             "im Anwendungsszenario betrachtete Komponente."
         )
+
+    st.divider()
+
+    st.subheader("📡 Live-Fahrzeugdaten")
+
+    history_df = pd.DataFrame(
+        st.session_state.twin_history
+    )
+
+    fig_live = go.Figure()
+
+    fig_live.add_trace(
+        go.Scatter(
+            x=history_df["mileage_km"],
+            y=history_df["brake_condition_percent"],
+            mode="lines+markers",
+            name="Bremsbelagzustand",
+            hovertemplate=(
+                "Kilometerstand: %{x:,.0f} km<br>"
+                "Bremsbelagzustand: %{y:.1f} %"
+                "<extra></extra>"
+            )
+        )
+    )
+
+    fig_live.update_layout(
+        xaxis_title="Kilometerstand",
+        yaxis_title="Bremsbelagzustand (%)",
+        yaxis=dict(
+            range=[0, 100]
+        ),
+        height=330,
+        margin=dict(
+            l=20,
+            r=20,
+            t=20,
+            b=20
+        ),
+        showlegend=False
+    )
+
+    st.plotly_chart(
+        fig_live,
+        use_container_width=True
+    )
+
+    st.caption(
+        "Der Verlauf zeigt die während der simulierten "
+        "Fahrzeugnutzung kontinuierlich aktualisierten "
+        "Zustandsdaten der virtuellen Fahrzeuginstanz DT-001."
+    )
 
     # Fahrzeug und Gesamtstatus
     col_vehicle, col_status = st.columns([3, 1])
