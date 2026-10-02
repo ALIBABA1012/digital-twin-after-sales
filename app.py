@@ -170,8 +170,8 @@ def show_vehicle_3d():
         shadow-intensity="1"
         exposure="1"
         camera-orbit="45deg 75deg auto"
-        min-camera-orbit="-180deg 75deg auto"
-        max-camera-orbit="180deg 75deg auto">
+        min-camera-orbit="-180deg 60deg auto"
+        max-camera-orbit="180deg 90deg auto">
     </model-viewer>
     """
 
@@ -289,8 +289,9 @@ if seite == "🚗 Fahrzeugübersicht":
     
         st.caption(
             "Interaktive 3D-Repräsentation der virtuellen "
-            "Fahrzeuginstanz DT-001. Das Fahrzeug kann "
-            "horizontal betrachtet und gedreht werden."
+            "Fahrzeuginstanz DT-001. Das Fahrzeug kann horizontal "
+            "um 360° sowie vertikal in einem begrenzten Bereich "
+            "betrachtet werden."
         )
         
     with col_twin_info:
