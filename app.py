@@ -1094,11 +1094,35 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     st.subheader("🛠️ Servicebewertung")
 
-    st.success(
-        "Aktuell besteht kein unmittelbarer Servicebedarf. "
-        "Bei gleichbleibender Zustandsentwicklung ist jedoch in 4.000 km mit einem Servicebedarf zu rechnen."
-    )
+    if twin["status"] == "Normal":
+        st.success(
+            "Aktuell besteht kein unmittelbarer Servicebedarf. "
+            f"Bei gleichbleibender Zustandsentwicklung wird der "
+            f"Bereich „Service empfohlen“ voraussichtlich in "
+            f"{format_km(wartungsbedarf_km)} erreicht."
+        )
 
+    elif twin["status"] == "Beobachten":
+        st.warning(
+            "Der Bremsbelagzustand sollte weiter beobachtet werden. "
+            f"Bei gleichbleibender Zustandsentwicklung wird der "
+            f"Bereich „Service empfohlen“ voraussichtlich in "
+            f"{format_km(wartungsbedarf_km)} erreicht."
+        )
+
+    elif twin["status"] == "Service empfohlen":
+        st.warning(
+            "Der definierte Bereich für eine Serviceempfehlung "
+            "ist erreicht. Eine Überprüfung des Bremssystems "
+            "wird empfohlen."
+        )
+
+    else:
+        st.error(
+            "Der Bremsbelagzustand befindet sich im definierten "
+            "kritischen Bereich. Eine zeitnahe Überprüfung des "
+            "Bremssystems wird empfohlen."
+        )
 
 # --------------------------------------------------
 # SCREEN 3 – SIMULATION
