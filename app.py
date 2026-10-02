@@ -777,7 +777,7 @@ if seite == "🚗 Fahrzeugübersicht":
 
     with col_analysis1:
         st.info(
-            "🔧 **Zustand & Prognose**\n\n"
+            "🔧 **Bremszustand & Prognose**\n\n"
             "Bewertung und zukünftige Zustandsentwicklung"
         )
 
