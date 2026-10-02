@@ -143,6 +143,7 @@ def show_vehicle_3d():
     brake_condition = twin["brake_condition_percent"]
     brake_status = twin["status"]
     mileage = twin["mileage_km"]
+    mileage_formatted = f"{mileage:,.0f}".replace(",", ".")
 
     with open("assets/CarConcept.glb", "rb") as model_file:
         model_data = base64.b64encode(
@@ -442,7 +443,7 @@ def show_vehicle_3d():
                 </span>
 
                 <span class="detail-value">
-                    {mileage:,.0f} km
+                    {mileage_formatted} km
                 </span>
 
             </div>
