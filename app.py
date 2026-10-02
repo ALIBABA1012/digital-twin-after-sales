@@ -771,8 +771,6 @@ if seite == "🚗 Fahrzeugübersicht":
             """
         )
 
-    st.markdown("### ↓")
-
     col_analysis1, col_analysis2, col_analysis3 = st.columns(3)
 
     with col_analysis1:
