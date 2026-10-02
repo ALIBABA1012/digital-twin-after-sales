@@ -132,6 +132,123 @@ def bestimme_status(zustand):
 
     else:
         return "Kritisch"
+
+def create_vehicle_3d(brake_status):
+    fig = go.Figure()
+
+    # Fahrzeugkarosserie
+    fig.add_trace(
+        go.Mesh3d(
+            x=[
+                -2.2, 2.2, 2.2, -2.2,
+                -2.2, 2.2, 2.2, -2.2
+            ],
+            y=[
+                -0.9, -0.9, 0.9, 0.9,
+                -0.9, -0.9, 0.9, 0.9
+            ],
+            z=[
+                0.5, 0.5, 0.5, 0.5,
+                1.1, 1.1, 1.1, 1.1
+            ],
+            i=[0, 0, 0, 1, 2, 4, 4, 5, 6, 3, 0, 1],
+            j=[1, 2, 3, 2, 3, 5, 6, 6, 7, 7, 4, 5],
+            k=[2, 3, 7, 6, 7, 6, 7, 2, 3, 4, 5, 6],
+            opacity=0.65,
+            name="Fahrzeug",
+            hoverinfo="skip"
+        )
+    )
+
+    # Dach / Fahrgastzelle
+    fig.add_trace(
+        go.Mesh3d(
+            x=[
+                -1.1, 1.1, 1.1, -1.1,
+                -0.7, 0.7, 0.7, -0.7
+            ],
+            y=[
+                -0.75, -0.75, 0.75, 0.75,
+                -0.65, -0.65, 0.65, 0.65
+            ],
+            z=[
+                1.1, 1.1, 1.1, 1.1,
+                1.7, 1.7, 1.7, 1.7
+            ],
+            i=[0, 0, 1, 2, 4, 4, 5, 6],
+            j=[1, 3, 2, 3, 5, 7, 6, 7],
+            k=[4, 4, 5, 6, 1, 3, 2, 3],
+            opacity=0.55,
+            name="Fahrgastzelle",
+            hoverinfo="skip"
+        )
+    )
+
+    # Radpositionen
+    wheel_positions = [
+        (-1.5, -1.0, 0.45),
+        (1.5, -1.0, 0.45),
+        (-1.5, 1.0, 0.45),
+        (1.5, 1.0, 0.45)
+    ]
+
+    for index, (x, y, z) in enumerate(wheel_positions):
+        fig.add_trace(
+            go.Scatter3d(
+                x=[x],
+                y=[y],
+                z=[z],
+                mode="markers",
+                marker=dict(
+                    size=14,
+                    symbol="circle"
+                ),
+                name="Brems-/Radbereich" if index == 0 else None,
+                showlegend=index == 0,
+                hovertemplate=(
+                    f"Brems-/Radbereich<br>"
+                    f"Bremsbelagzustand: "
+                    f"{st.session_state.twin_state['brake_condition_percent']:.1f} %"
+                    f"<br>Status: {brake_status}"
+                    "<extra></extra>"
+                )
+            )
+        )
+
+    fig.update_layout(
+        height=480,
+        margin=dict(l=0, r=0, t=10, b=0),
+        showlegend=True,
+        scene=dict(
+            xaxis=dict(
+                visible=False,
+                range=[-3, 3]
+            ),
+            yaxis=dict(
+                visible=False,
+                range=[-2, 2]
+            ),
+            zaxis=dict(
+                visible=False,
+                range=[0, 2.3]
+            ),
+            aspectmode="manual",
+            aspectratio=dict(
+                x=2.4,
+                y=1.4,
+                z=0.9
+            ),
+            camera=dict(
+                eye=dict(
+                    x=1.6,
+                    y=1.8,
+                    z=1.1
+                )
+            )
+        )
+    )
+
+    return fig
         
 # --------------------------------------------------
 # Navigation
@@ -229,6 +346,67 @@ if seite == "🚗 Fahrzeugübersicht":
         "Datenübertragung eines realen Fahrzeugs wird im Demonstrator "
         "durch synthetisch erzeugte Fahrzeugdaten simuliert."
     )
+
+    st.divider()
+
+    st.subheader("🚗 Virtuelle Fahrzeugrepräsentation")
+
+    col_3d, col_twin_info = st.columns([2, 1])
+
+    with col_3d:
+        vehicle_figure = create_vehicle_3d(
+            twin["status"]
+        )
+
+        st.plotly_chart(
+            vehicle_figure,
+            use_container_width=True,
+            config={
+                "displayModeBar": False,
+                "scrollZoom": True
+            }
+        )
+
+        st.caption(
+            "Interaktive 3D-Repräsentation der virtuellen "
+            "Fahrzeuginstanz DT-001. Das Modell kann gedreht "
+            "und vergrößert werden."
+        )
+
+    with col_twin_info:
+        st.markdown("### Digital Twin DT-001")
+
+        st.write(
+            f"**Betriebszustand:** {twin['operating_state']}"
+        )
+
+        st.write(
+            f"**Geschwindigkeit:** {twin['speed_kmh']} km/h"
+        )
+
+        st.write(
+            f"**Kilometerstand:** {format_km(twin['mileage_km'])}"
+        )
+
+        st.write(
+            f"**Bremsbelagzustand:** "
+            f"{twin['brake_condition_percent']:.1f} %"
+        )
+
+        st.write(
+            f"**Zustandsbewertung:** {twin['status']}"
+        )
+
+        st.divider()
+
+        st.markdown("#### Überwachte Komponente")
+
+        st.write("🔧 **Bremssystem / Bremsbeläge**")
+
+        st.write(
+            "Die markierten Radbereiche repräsentieren die "
+            "im Anwendungsszenario betrachtete Komponente."
+        )
 
     # Fahrzeug und Gesamtstatus
     col_vehicle, col_status = st.columns([3, 1])
