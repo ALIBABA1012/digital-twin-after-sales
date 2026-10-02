@@ -136,12 +136,28 @@ def bestimme_status(zustand):
         return "Kritisch"
 
 def show_vehicle_3d():
-    """Zeigt das lokale GLB-Fahrzeugmodell interaktiv an."""
+    """Zeigt das 3D-Fahrzeug mit interaktivem Bremsbereich."""
+
+    twin = st.session_state.twin_state
+
+    brake_condition = twin["brake_condition_percent"]
+    brake_status = twin["status"]
+    mileage = twin["mileage_km"]
 
     with open("assets/CarConcept.glb", "rb") as model_file:
         model_data = base64.b64encode(
             model_file.read()
         ).decode("utf-8")
+
+    # Statusabhängige Farbe der Bremsanzeige
+    if brake_status == "Normal":
+        status_color = "#2e7d32"
+    elif brake_status == "Beobachten":
+        status_color = "#ed6c02"
+    elif brake_status == "Service empfohlen":
+        status_color = "#d32f2f"
+    else:
+        status_color = "#b71c1c"
 
     html = f"""
     <script type="module"
@@ -153,60 +169,337 @@ def show_vehicle_3d():
             margin: 0;
             background: transparent;
             overflow: hidden;
+            font-family: Arial, sans-serif;
+        }}
+
+        .vehicle-container {{
+            position: relative;
+            width: 100%;
+            height: 520px;
         }}
 
         model-viewer {{
             width: 100%;
-            height: 500px;
+            height: 520px;
             background-color: transparent;
         }}
 
+        /* Hotspot am Vorderrad */
         .brake-hotspot {{
-            width: 34px;
-            height: 34px;
+            width: 38px;
+            height: 38px;
+
             border-radius: 50%;
             border: 2px solid white;
-            background: #d32f2f;
+
+            background: {status_color};
             color: white;
-            font-size: 17px;
+
+            font-size: 18px;
             cursor: pointer;
-        
+
             display: flex;
             align-items: center;
             justify-content: center;
-        
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
         }}
 
         .brake-hotspot:hover {{
             transform: scale(1.15);
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.4);
+        }}
+
+        /* Bremsdetail */
+        .brake-panel {{
+            position: absolute;
+
+            top: 20px;
+            right: 20px;
+
+            width: 260px;
+
+            padding: 18px;
+
+            background: rgba(20, 22, 27, 0.96);
+
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+
+            color: white;
+
+            display: none;
+
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+            z-index: 10;
+        }}
+
+        .brake-panel.visible {{
+            display: block;
+        }}
+
+        .panel-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 14px;
+        }}
+
+        .panel-title {{
+            font-size: 16px;
+            font-weight: bold;
+        }}
+
+        .close-button {{
+            border: none;
+            background: transparent;
+            color: #bbbbbb;
+
+            font-size: 22px;
+            cursor: pointer;
+        }}
+
+        /* Vereinfachte Bremsscheibe */
+        .brake-visual {{
+            width: 105px;
+            height: 105px;
+
+            margin: 8px auto 18px auto;
+
+            border-radius: 50%;
+
+            border: 12px solid #777;
+
+            background: #303030;
+
+            position: relative;
+
+            box-shadow:
+                inset 0 0 0 5px #aaaaaa,
+                0 0 14px rgba(0, 0, 0, 0.5);
+        }}
+
+        .brake-visual::after {{
+            content: "";
+
+            position: absolute;
+
+            width: 28px;
+            height: 58px;
+
+            right: -16px;
+            top: 23px;
+
+            background: {status_color};
+
+            border-radius: 6px;
+        }}
+
+        .detail-row {{
+            display: flex;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            padding: 7px 0;
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            font-size: 14px;
+        }}
+
+        .detail-value {{
+            font-weight: bold;
+            text-align: right;
+        }}
+
+        .status-value {{
+            color: {status_color};
+        }}
+
+        .sync-info {{
+            margin-top: 14px;
+
+            padding-top: 10px;
+
+            font-size: 12px;
+            color: #b7b7b7;
+        }}
+
+        .sync-dot {{
+            display: inline-block;
+
+            width: 8px;
+            height: 8px;
+
+            margin-right: 6px;
+
+            border-radius: 50%;
+
+            background: #43a047;
         }}
     </style>
 
-    <model-viewer
-        src="data:model/gltf-binary;base64,{model_data}"
-        camera-controls
-        disable-zoom
-        interaction-prompt="none"
-        shadow-intensity="1"
-        exposure="1"
-        camera-orbit="45deg 75deg auto"
-        min-camera-orbit="-180deg 60deg auto"
-        max-camera-orbit="180deg 90deg auto">
-    
-        <button
-            class="brake-hotspot"
-            slot="hotspot-brake-front"
-            data-position="0.85m 0.35m 1.55m"
-            data-normal="0m 0m 1m">
-            🔧
-        </button>
-    </model-viewer>
+
+    <div class="vehicle-container">
+
+        <model-viewer
+            src="data:model/gltf-binary;base64,{model_data}"
+
+            camera-controls
+            disable-zoom
+            interaction-prompt="none"
+
+            shadow-intensity="1"
+            exposure="1"
+
+            camera-orbit="45deg 75deg auto"
+
+            min-camera-orbit="-180deg 60deg auto"
+            max-camera-orbit="180deg 90deg auto">
+
+            <button
+                id="brakeHotspot"
+
+                class="brake-hotspot"
+
+                slot="hotspot-brake-front"
+
+                data-position="0.85m 0.35m 1.55m"
+                data-normal="0m 0m 1m"
+
+                aria-label="Bremszustand anzeigen">
+
+                🔧
+
+            </button>
+
+        </model-viewer>
+
+
+        <div
+            id="brakePanel"
+            class="brake-panel">
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+                    🔧 Bremssystem – vorne
+                </div>
+
+                <button
+                    id="closeBrakePanel"
+                    class="close-button"
+                    aria-label="Detailansicht schließen">
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+            <div class="brake-visual"></div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Bremsbelagzustand
+                </span>
+
+                <span class="detail-value">
+                    {brake_condition:.1f} %
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Status
+                </span>
+
+                <span class="detail-value status-value">
+                    {brake_status}
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Kilometerstand
+                </span>
+
+                <span class="detail-value">
+                    {mileage:,.0f} km
+                </span>
+
+            </div>
+
+
+            <div class="sync-info">
+
+                <span class="sync-dot"></span>
+
+                Mit Digital Twin DT-001 synchronisiert
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const hotspot =
+            document.getElementById("brakeHotspot");
+
+        const panel =
+            document.getElementById("brakePanel");
+
+        const closeButton =
+            document.getElementById("closeBrakePanel");
+
+
+        hotspot.addEventListener(
+            "click",
+            function(event) {{
+
+                event.stopPropagation();
+
+                panel.classList.add("visible");
+
+            }}
+        );
+
+
+        closeButton.addEventListener(
+            "click",
+            function() {{
+
+                panel.classList.remove("visible");
+
+            }}
+        );
+
+    </script>
     """
 
     components.html(
         html,
-        height=500,
+        height=520,
         scrolling=False
     )
         
