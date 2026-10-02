@@ -26,6 +26,16 @@ brakes = data["brakes"]
 service_history = data["service_history"]
 
 # --------------------------------------------------
+# Zentrale Modellparameter des Demonstrators
+# --------------------------------------------------
+
+VERSCHLEISS_PRO_1000_KM = 5
+
+GRENZE_NORMAL = 30
+GRENZE_BEOBACHTEN = 20
+GRENZE_SERVICE = 10
+
+# --------------------------------------------------
 # Digital-Twin-Zustand initialisieren
 # --------------------------------------------------
 
@@ -36,6 +46,7 @@ if "twin_state" not in st.session_state:
         "brake_condition_percent": float(
             brakes["brake_pad_condition_percent"]
         ),
+        "status": brakes["status"],
         "operating_state": "Stillstand",
         "sync_status": "Synchronisiert",
         "last_update": time.time()
@@ -105,6 +116,23 @@ def update_twin_state():
 
     twin["last_update"] = time.time()
 
+    twin["status"] = bestimme_status(
+        twin["brake_condition_percent"]
+    )
+    
+def bestimme_status(zustand):
+    if zustand > GRENZE_NORMAL:
+        return "Normal"
+
+    elif zustand > GRENZE_BEOBACHTEN:
+        return "Beobachten"
+
+    elif zustand > GRENZE_SERVICE:
+        return "Service empfohlen"
+
+    else:
+        return "Kritisch"
+        
 # --------------------------------------------------
 # Navigation
 # --------------------------------------------------
@@ -128,8 +156,21 @@ seite = st.sidebar.radio(
 
 st.sidebar.divider()
 
-st.sidebar.write("**Aktueller Status**")
-st.sidebar.success(f"● {brakes['status']}")
+st.sidebar.write("**Aktueller Twin-Status**")
+
+twin_status = st.session_state.twin_state["status"]
+
+if twin_status == "Normal":
+    st.sidebar.success(f"● {twin_status}")
+
+elif twin_status == "Beobachten":
+    st.sidebar.warning(f"● {twin_status}")
+
+elif twin_status == "Service empfohlen":
+    st.sidebar.warning(f"● {twin_status}")
+
+else:
+    st.sidebar.error(f"● {twin_status}")
 
 st.sidebar.caption("Synthetische Fahrzeugdaten")
 
@@ -197,7 +238,18 @@ if seite == "🚗 Fahrzeugübersicht":
 
     with col_status:
         st.write("**Aktueller Status**")
-        st.success(f"● {brakes['status']}")
+    
+        if twin["status"] == "Normal":
+            st.success("● Normal")
+    
+        elif twin["status"] == "Beobachten":
+            st.warning("● Beobachten")
+    
+        elif twin["status"] == "Service empfohlen":
+            st.warning("● Service empfohlen")
+    
+        else:
+            st.error("● Kritisch")
 
     # Kennzahlen
     col1, col2, col3 = st.columns(3)
@@ -234,7 +286,7 @@ if seite == "🚗 Fahrzeugübersicht":
         st.write("**Antrieb:** Elektro")
         st.write(
             f"**Kilometerstand:** "
-            f"{format_km(vehicle['mileage_km'])}"
+            f"{format_km(twin['mileage_km'])}"
         )
 
     with col_condition:
@@ -242,10 +294,10 @@ if seite == "🚗 Fahrzeugübersicht":
 
         st.metric(
             "Bremsbelagzustand",
-            f"{brakes['brake_pad_condition_percent']} %"
+            f"{twin['brake_condition_percent']:.1f} %"
         )
-
-        st.write(f"**Status:** {brakes['status']}")
+        
+        st.write(f"**Status:** {twin['status']}")
         st.write(
             f"**Messzeitpunkt:** "
             f"{format_date(brakes['measurement_date'])}"
@@ -310,6 +362,8 @@ if seite == "🚗 Fahrzeugübersicht":
 
 elif seite == "🔧 Bremszustand & Prognose":
 
+    twin = st.session_state.twin_state
+
     st.title("Bremszustand & Prognose")
 
     st.caption(
@@ -330,10 +384,10 @@ elif seite == "🔧 Bremszustand & Prognose":
 
         st.metric(
             "Bremsbelagzustand",
-            f"{brakes['brake_pad_condition_percent']} %"
+            f"{twin['brake_condition_percent']:.1f} %"
         )
-
-        st.write(f"**Status:** {brakes['status']}")
+        
+        st.write(f"**Status:** {twin['status']}")
         st.write(
             f"**Messzeitpunkt:** "
             f"{format_date(brakes['measurement_date'])}"
@@ -342,10 +396,7 @@ elif seite == "🔧 Bremszustand & Prognose":
     with col_prediction:
         st.subheader("📈 Prognose")
     
-        VERSCHLEISS_PRO_1000_KM = 5
-        GRENZE_SERVICE = 20
-    
-        aktueller_zustand = brakes["brake_pad_condition_percent"]
+        aktueller_zustand = twin["brake_condition_percent"]
     
         if aktueller_zustand > GRENZE_SERVICE:
             benoetigter_verschleiss = (
@@ -358,8 +409,8 @@ elif seite == "🔧 Bremszustand & Prognose":
             ) * 1000
     
             wartungsbedarf_km = round(
-                wartungsbedarf_km / 1000
-            ) * 1000
+                wartungsbedarf_km / 100
+            ) * 100
     
             st.metric(
                 "Erwarteter Wartungsbedarf",
@@ -371,7 +422,8 @@ elif seite == "🔧 Bremszustand & Prognose":
             )
             
             st.write(
-                f"**Hinweis:** Bei gleichbleibender Zustandsentwicklung "
+                f"**Hinweis:** Bei gleichbleibender synthetischer "
+                f"Zustandsentwicklung wird in ca. "
                 f"wird in ca. {format_km(wartungsbedarf_km)} "
                 f"ein Servicebedarf erwartet."
             )
@@ -414,19 +466,18 @@ elif seite == "🔧 Bremszustand & Prognose":
     VERSCHLEISS_PRO_1000_KM = 5
 
     prognose_km = [
-        vehicle["mileage_km"],
-        vehicle["mileage_km"] + 1000,
-        vehicle["mileage_km"] + 2000,
-        vehicle["mileage_km"] + 3000,
-        vehicle["mileage_km"] + 4000,
-        vehicle["mileage_km"] + 5000
+        twin["mileage_km"],
+        twin["mileage_km"] + 1000,
+        twin["mileage_km"] + 2000,
+        twin["mileage_km"] + 3000,
+        twin["mileage_km"] + 4000,
+        twin["mileage_km"] + 5000
     ]
-
     prognose_zustaende = [
         max(
             0,
-            brakes["brake_pad_condition_percent"]
-            - ((km - vehicle["mileage_km"]) / 1000)
+            twin["brake_condition_percent"]
+            - ((km - twin["mileage_km"]) / 1000)
             * VERSCHLEISS_PRO_1000_KM
         )
         for km in prognose_km
@@ -470,8 +521,8 @@ elif seite == "🔧 Bremszustand & Prognose":
     # Aktuellen Zustand hervorheben
     fig.add_trace(
         go.Scatter(
-            x=[vehicle["mileage_km"]],
-            y=[brakes["brake_pad_condition_percent"]],
+            x=[twin["mileage_km"]],
+            y=[twin["brake_condition_percent"]],
             mode="markers",
             name="Aktueller Zustand",
             marker=dict(
@@ -563,6 +614,8 @@ elif seite == "🔧 Bremszustand & Prognose":
 
 elif seite == "📈 Simulation":
 
+    twin = st.session_state.twin_state
+    
     st.title("Simulation der Zustandsentwicklung")
 
     st.caption(
@@ -579,14 +632,8 @@ elif seite == "📈 Simulation":
     # Simulationsparameter
     # --------------------------------------------------
 
-    VERSCHLEISS_PRO_1000_KM = 5
-
-    GRENZE_NORMAL = 30
-    GRENZE_BEOBACHTEN = 20
-    GRENZE_SERVICE = 10
-
-    aktuelle_km = vehicle["mileage_km"]
-    aktueller_zustand = brakes["brake_pad_condition_percent"]
+    aktuelle_km = twin["mileage_km"]
+    aktueller_zustand = twin["brake_condition_percent"]
 
     st.subheader("Simulationsparameter")
 
@@ -633,17 +680,7 @@ elif seite == "📈 Simulation":
         )
 
         # Status bestimmen
-        if simulierter_zustand > GRENZE_NORMAL:
-            simulierter_status = "Normal"
-
-        elif simulierter_zustand > GRENZE_BEOBACHTEN:
-            simulierter_status = "Beobachten"
-
-        elif simulierter_zustand > GRENZE_SERVICE:
-            simulierter_status = "Service empfohlen"
-
-        else:
-            simulierter_status = "Kritisch"
+        simulierter_status = bestimme_status(simulierter_zustand)
 
         # Simulationsergebnis für andere Ansichten speichern
         st.session_state.simuliert = True
@@ -675,9 +712,14 @@ elif seite == "📈 Simulation":
                 f"{aktueller_zustand:.0f} %"
             )
 
-            st.success(
-                f"Status: {brakes['status']}"
-            )
+            if twin["status"] == "Normal":
+                st.success(f"Status: {twin['status']}")
+            elif twin["status"] == "Beobachten":
+                st.warning(f"Status: {twin['status']}")
+            elif twin["status"] == "Service empfohlen":
+                st.warning(f"Status: {twin['status']}")
+            else:
+                st.error(f"Status: {twin['status']}")
 
         with col_after:
             st.markdown("### Nach Simulation")
@@ -768,6 +810,8 @@ elif seite == "📈 Simulation":
 
 elif seite == "👤 Serviceinformation":
 
+    twin = st.session_state.twin_state
+    
     st.title("Serviceinformation")
 
     st.caption(
@@ -793,9 +837,9 @@ elif seite == "👤 Serviceinformation":
         )
 
     else:
-        zustand = brakes["brake_pad_condition_percent"]
-        status = brakes["status"]
-        kilometerstand = vehicle["mileage_km"]
+        zustand = twin["brake_condition_percent"]
+        status = twin["status"]
+        kilometerstand = twin["mileage_km"]
 
         st.warning(
             "Es wurde noch keine Simulation durchgeführt. "
