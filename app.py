@@ -722,6 +722,83 @@ if seite == "🚗 Fahrzeugübersicht":
         "Zustandsdaten der virtuellen Fahrzeuginstanz DT-001."
     )
 
+    st.divider()
+
+    st.subheader("🔄 Datenfluss des Digital-Twin-Demonstrators")
+
+    col_flow1, col_arrow1, col_flow2, col_arrow2, col_flow3, col_arrow3, col_flow4 = st.columns(
+        [2, 0.4, 2, 0.4, 2, 0.4, 2]
+    )
+
+    with col_flow1:
+        st.markdown(
+            """
+            #### 🚗 Fahrzeug
+            Simulierte Fahrzeugnutzung
+            """
+        )
+
+    with col_arrow1:
+        st.markdown("### →")
+
+    with col_flow2:
+        st.markdown(
+            """
+            #### 📡 Fahrzeugdaten
+            Synthetische Zustandsdaten
+            """
+        )
+
+    with col_arrow2:
+        st.markdown("### →")
+
+    with col_flow3:
+        st.markdown(
+            """
+            #### 🔄 Synchronisation
+            Kontinuierliche Aktualisierung
+            """
+        )
+
+    with col_arrow3:
+        st.markdown("### →")
+
+    with col_flow4:
+        st.markdown(
+            """
+            #### 🚘 Digital Twin
+            Virtuelle Instanz DT-001
+            """
+        )
+
+    st.markdown("### ↓")
+
+    col_analysis1, col_analysis2, col_analysis3 = st.columns(3)
+
+    with col_analysis1:
+        st.info(
+            "🔧 **Zustand & Prognose**\n\n"
+            "Bewertung und zukünftige Zustandsentwicklung"
+        )
+
+    with col_analysis2:
+        st.info(
+            "📈 **Simulation**\n\n"
+            "What-if-Analyse zusätzlicher Fahrzeugnutzung"
+        )
+
+    with col_analysis3:
+        st.info(
+            "👤 **Serviceinformation**\n\n"
+            "Ableitung verständlicher Serviceinformationen"
+        )
+
+    st.caption(
+        "Die kontinuierliche Datenübertragung eines realen "
+        "Fahrzeugs wird im Demonstrator durch synthetisch "
+        "erzeugte Fahrzeugdaten simuliert."
+    )
+
     # Fahrzeug und Gesamtstatus
     col_vehicle, col_status = st.columns([3, 1])
 
