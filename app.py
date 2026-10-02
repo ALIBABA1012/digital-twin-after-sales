@@ -841,34 +841,26 @@ if seite == "🚗 Fahrzeugübersicht":
 
     st.divider()
 
-    # Fahrzeug- und Zustandsinformationen
-    col_info, col_condition = st.columns(2)
+    # Fahrzeugstammdaten
+    st.subheader("🚗 Fahrzeuginformationen")
 
-    with col_info:
-        st.subheader("🚗 Fahrzeuginformationen")
+    col_info1, col_info2 = st.columns(2)
 
-        st.write(f"**Fahrzeug-ID:** {vehicle['vehicle_id']}")
-        st.write(f"**Modell:** {vehicle['model']}")
-        st.write(f"**Baujahr:** {vehicle['year']}")
+    with col_info1:
+        st.write(
+            f"**Fahrzeug-ID:** {vehicle['vehicle_id']}"
+        )
+
+        st.write(
+            f"**Modell:** {vehicle['model']}"
+        )
+
+    with col_info2:
+        st.write(
+            f"**Baujahr:** {vehicle['year']}"
+        )
+
         st.write("**Antrieb:** Elektro")
-        st.write(
-            f"**Kilometerstand:** "
-            f"{format_km(twin['mileage_km'])}"
-        )
-
-    with col_condition:
-        st.subheader("🔧 Aktueller Bremszustand")
-
-        st.metric(
-            "Bremsbelagzustand",
-            f"{twin['brake_condition_percent']:.1f} %"
-        )
-        
-        st.write(f"**Status:** {twin['status']}")
-        st.write(
-            f"**Messzeitpunkt:** "
-            f"{format_date(brakes['measurement_date'])}"
-        )
 
     st.divider()
 
