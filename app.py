@@ -756,7 +756,7 @@ if seite == "🚗 Fahrzeugübersicht":
         st.markdown(
             """
             #### 🔄 Synchronisation
-            Kontinuierliche Aktualisierung
+            Kontinuierliche Zustandsaktualisierung
             """
         )
 
