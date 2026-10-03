@@ -987,7 +987,7 @@ elif seite == "🔧 Bremszustand & Prognose":
             st.write(
                 f"**Hinweis:** Bei gleichbleibender synthetischer "
                 f"Zustandsentwicklung wird in ca. "
-                f"wird in ca. {format_km(wartungsbedarf_km)} "
+                f"{format_km(wartungsbedarf_km)} "
                 f"ein Servicebedarf erwartet."
             )
     
@@ -1026,8 +1026,6 @@ elif seite == "🔧 Bremszustand & Prognose":
     ]
 
     # Vereinfachte synthetische Prognose
-    VERSCHLEISS_PRO_1000_KM = 5
-
     prognose_km = [
         twin["mileage_km"],
         twin["mileage_km"] + 1000,
