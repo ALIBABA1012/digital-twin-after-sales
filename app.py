@@ -947,9 +947,13 @@ elif seite == "🔧 Bremszustand & Prognose":
         )
         
         st.write(f"**Status:** {twin['status']}")
+        letzte_sync = time.strftime(
+            "%d.%m.%Y – %H:%M:%S",
+            time.localtime(twin["last_update"])
+        )
+        
         st.write(
-            f"**Messzeitpunkt:** "
-            f"{format_date(brakes['measurement_date'])}"
+            f"**Letzte Synchronisation:** {letzte_sync}"
         )
 
     with col_prediction:
