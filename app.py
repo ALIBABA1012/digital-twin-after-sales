@@ -933,7 +933,7 @@ elif seite == "🔧 Bremszustand & Prognose":
 
         st.metric(
             "Bremsbelagzustand",
-            f"{aktueller_zustand:.1f}".replace(".", ",") + " %"
+            f"{twin['brake_condition_percent']:.1f}".replace(".", ",") + " %"
         )
         
         st.write(f"**Status:** {twin['status']}")
