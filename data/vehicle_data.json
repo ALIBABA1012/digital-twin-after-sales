@@ -9,7 +9,7 @@
 
   "brakes": {
     "brake_pad_condition_percent": 38,
-    "status": "Normal",
+    "status": "Normal"
   },
 
   "condition_history": [
