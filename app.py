@@ -695,9 +695,13 @@ if seite == "🚗 Fahrzeugübersicht":
     )
 
     fig_live.update_layout(
-        xaxis_title="Kilometerstand",
-        yaxis_title="Bremsbelagzustand (%)",
+        xaxis=dict(
+            title="Kilometerstand",
+            tickformat=",.0f",
+            separatethousands=True
+        ),
         yaxis=dict(
+            title="Bremsbelagzustand (%)",
             range=[0, 100]
         ),
         height=330,
@@ -712,7 +716,10 @@ if seite == "🚗 Fahrzeugübersicht":
 
     st.plotly_chart(
         fig_live,
-        use_container_width=True
+        use_container_width=True,
+        config={
+            "locale": "de"
+        }
     )
 
     st.caption(
@@ -1103,7 +1110,8 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     fig.update_layout(
         xaxis=dict(
-            title="Kilometerstand [km]"
+            title="Kilometerstand [km]",
+            tickformat=".0f"
         ),
         yaxis=dict(
             title="Bremsbelagzustand [%]",
@@ -1120,7 +1128,10 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     st.plotly_chart(
         fig,
-        use_container_width=True
+        use_container_width=True,
+        config={
+            "locale": "de"
+        }
     )
 
     st.caption(
