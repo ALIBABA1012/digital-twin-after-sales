@@ -50,7 +50,6 @@ if "twin_state" not in st.session_state:
         ),
         "status": brakes["status"],
         "operating_state": "Stillstand",
-        "sync_status": "Synchronisiert",
         "last_update": time.time()
     }
 
@@ -85,8 +84,6 @@ if "simulierter_status" not in st.session_state:
 if "simulierter_km_stand" not in st.session_state:
     st.session_state.simulierter_km_stand = vehicle["mileage_km"]
 
-if "zusaetzliche_km" not in st.session_state:
-    st.session_state.zusaetzliche_km = 0
 
 # --------------------------------------------------
 # Hilfsfunktionen
@@ -117,10 +114,12 @@ def update_twin_state():
 
     twin["mileage_km"] += simulated_distance
 
-    # Synthetische Verschleißlogik:
-    # 5 Prozentpunkte je 1.000 km
-    brake_wear = (simulated_distance / 1000) * 5
-
+    # Synthetische Verschleißberechnung auf Basis
+    # der zentral definierten Verschleißrate
+    brake_wear = (
+        simulated_distance / 1000
+    ) * VERSCHLEISS_PRO_1000_KM
+    
     twin["brake_condition_percent"] = max(
         0,
         twin["brake_condition_percent"] - brake_wear
@@ -175,7 +174,7 @@ def show_vehicle_3d():
     elif brake_status == "Beobachten":
         status_color = "#ed6c02"
     elif brake_status == "Service empfohlen":
-        status_color = "#d32f2f"
+        status_color = "#f57c00"
     else:
         status_color = "#b71c1c"
 
@@ -667,7 +666,7 @@ if seite == "🚗 Fahrzeugübersicht":
         st.write("🔧 **Bremssystem / Bremsbeläge**")
 
         st.write(
-            "Die markierten Radbereiche repräsentieren die "
+            "Der markierte Radbereich repräsentiert die "
             "im Anwendungsszenario betrachtete Komponente."
         )
 
@@ -961,9 +960,9 @@ elif seite == "🔧 Bremszustand & Prognose":
     
         aktueller_zustand = twin["brake_condition_percent"]
     
-        if aktueller_zustand > GRENZE_SERVICE:
+        if aktueller_zustand > GRENZE_BEOBACHTEN:
             benoetigter_verschleiss = (
-                aktueller_zustand - GRENZE_SERVICE
+                aktueller_zustand - GRENZE_BEOBACHTEN
             )
     
             wartungsbedarf_km = (
@@ -1104,32 +1103,7 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     fig.update_layout(
         xaxis=dict(
-            title="Kilometerstand [km]",
-            tickmode="array",
-            tickvals=[
-                30000,
-                32000,
-                34000,
-                36000,
-                38000,
-                40000,
-                42000,
-                44000,
-                46000,
-                48000
-            ],
-            ticktext=[
-                "30.000",
-                "32.000",
-                "34.000",
-                "36.000",
-                "38.000",
-                "40.000",
-                "42.000",
-                "44.000",
-                "46.000",
-                "48.000"
-            ]
+            title="Kilometerstand [km]"
         ),
         yaxis=dict(
             title="Bremsbelagzustand [%]",
@@ -1272,7 +1246,6 @@ elif seite == "📈 Simulation":
         st.session_state.simulierter_zustand = simulierter_zustand
         st.session_state.simulierter_status = simulierter_status
         st.session_state.simulierter_km_stand = simulierter_km_stand
-        st.session_state.zusaetzliche_km = zusaetzliche_km
 
         st.divider()
 
@@ -1480,7 +1453,7 @@ elif seite == "👤 Serviceinformation":
 
         st.markdown("### Was wurde festgestellt?")
         st.write(
-            "Der aktuelle Bremsbelagzustand befindet sich "
+            "Der zugrunde liegende Bremsbelagzustand befindet sich "
             "im normalen Bereich."
         )
 
@@ -1501,8 +1474,8 @@ elif seite == "👤 Serviceinformation":
 
         st.markdown("### Was wurde festgestellt?")
         st.write(
-            "Der Bremsbelagzustand hat sich gegenüber dem "
-            "Ausgangszustand verringert."
+            "Der Bremsbelagzustand befindet sich im "
+            "definierten Beobachtungsbereich."
         )
 
         st.markdown("### Besteht Handlungsbedarf?")
