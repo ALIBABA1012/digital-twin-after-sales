@@ -686,19 +686,39 @@ if seite == "🚗 Fahrzeugübersicht":
             y=history_df["brake_condition_percent"],
             mode="lines+markers",
             name="Bremsbelagzustand",
+            customdata=[
+                f"{wert:,.0f}".replace(",", ".")
+                for wert in history_df["mileage_km"]
+            ],
             hovertemplate=(
-                "Kilometerstand: %{x:,.0f} km<br>"
+                "Kilometerstand: %{customdata} km<br>"
                 "Bremsbelagzustand: %{y:.1f} %"
                 "<extra></extra>"
             )
         )
     )
 
+    x_min_live = int(history_df["mileage_km"].min())
+    x_max_live = int(history_df["mileage_km"].max())
+    
+    tick_start_live = (x_min_live // 500) * 500
+    tick_end_live = ((x_max_live // 500) + 1) * 500
+    
+    tickvals_live = list(
+        range(tick_start_live, tick_end_live + 1, 500)
+    )
+    
+    ticktext_live = [
+        f"{wert:,}".replace(",", ".")
+        for wert in tickvals_live
+    ]
+    
     fig_live.update_layout(
         xaxis=dict(
             title="Kilometerstand",
-            tickformat=",.0f",
-            separatethousands=True
+            tickmode="array",
+            tickvals=tickvals_live,
+            ticktext=ticktext_live
         ),
         yaxis=dict(
             title="Bremsbelagzustand (%)",
