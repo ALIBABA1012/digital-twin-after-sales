@@ -823,48 +823,6 @@ if seite == "🚗 Fahrzeugübersicht":
         "erzeugte Fahrzeugdaten simuliert."
     )
 
-    # Fahrzeug und Gesamtstatus
-    col_vehicle, col_status = st.columns([3, 1])
-
-    with col_vehicle:
-        st.subheader(f"Fahrzeug {vehicle['vehicle_id']}")
-
-    with col_status:
-        st.write("**Aktueller Status**")
-    
-        if twin["status"] == "Normal":
-            st.success("● Normal")
-    
-        elif twin["status"] == "Beobachten":
-            st.warning("● Beobachten")
-    
-        elif twin["status"] == "Service empfohlen":
-            st.warning("● Service empfohlen")
-    
-        else:
-            st.error("● Kritisch")
-
-    # Kennzahlen
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.metric(
-            "Kilometerstand",
-            format_km(twin["mileage_km"])
-        )
-
-    with col2:
-        st.metric(
-            "Geschwindigkeit",
-            f"{twin['speed_kmh']} km/h"
-        )
-
-    with col3:
-        st.metric(
-            "Bremsbelagzustand",
-            f"{twin['brake_condition_percent']:.1f} %"
-        )
-
     st.divider()
 
     # Fahrzeugstammdaten
