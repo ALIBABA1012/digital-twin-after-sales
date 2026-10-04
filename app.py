@@ -1,4 +1,4 @@
-import json
+{import json
 import time
 import pandas as pd
 import plotly.graph_objects as go
@@ -715,13 +715,13 @@ if seite == "🚗 Fahrzeugübersicht":
     
     fig_live.update_layout(
         xaxis=dict(
-            title="Kilometerstand",
+            title="Kilometerstand [km]",
             tickmode="array",
             tickvals=tickvals_live,
             ticktext=ticktext_live
         ),
         yaxis=dict(
-            title="Bremsbelagzustand (%)",
+            title="Bremsbelagzustand [%]",
             range=[0, 100]
         ),
         height=330,
@@ -1079,8 +1079,12 @@ elif seite == "🔧 Bremszustand & Prognose":
             y=historische_zustaende,
             mode="lines+markers",
             name="Historischer Verlauf",
+            customdata=[
+                f"{wert:,.0f}".replace(",", ".")
+                for wert in historische_km
+            ],
             hovertemplate=(
-                "Kilometerstand: %{x:,.0f} km<br>"
+                "Kilometerstand: %{customdata} km<br>"
                 "Bremsbelagzustand: %{y:.0f} %"
                 "<extra></extra>"
             )
@@ -1094,11 +1098,15 @@ elif seite == "🔧 Bremszustand & Prognose":
             y=prognose_zustaende,
             mode="lines+markers",
             name="Prognose",
+            customdata=[
+                f"{wert:,.0f}".replace(",", ".")
+                for wert in prognose_km
+            ],
             line=dict(
                 dash="dash"
             ),
             hovertemplate=(
-                "Kilometerstand: %{x:,.0f} km<br>"
+                "Kilometerstand: %{customdata} km<br>"
                 "Bremsbelagzustand: %{y:.0f} %"
                 "<extra></extra>"
             )
@@ -1112,6 +1120,9 @@ elif seite == "🔧 Bremszustand & Prognose":
             y=[twin["brake_condition_percent"]],
             mode="markers",
             name="Aktueller Zustand",
+            customdata=[
+                format_km(twin["mileage_km"]).replace(" km", "")
+            ],
             marker=dict(
                 size=15,
                 color="green",
@@ -1121,17 +1132,28 @@ elif seite == "🔧 Bremszustand & Prognose":
                 )
             ),
             hovertemplate=(
-                "Kilometerstand: %{x:,.0f} km<br>"
+                "Kilometerstand: %{customdata} km<br>"
                 "Bremsbelagzustand: %{y:.0f} %"
                 "<extra></extra>"
             )
         )
     )
 
+    tickvals_prognose = list(
+        range(30000, 50001, 5000)
+    )
+    
+    ticktext_prognose = [
+        f"{wert:,}".replace(",", ".")
+        for wert in tickvals_prognose
+    ]
+    
     fig.update_layout(
         xaxis=dict(
             title="Kilometerstand [km]",
-            tickformat=".0f"
+            tickmode="array",
+            tickvals=tickvals_prognose,
+            ticktext=ticktext_prognose
         ),
         yaxis=dict(
             title="Bremsbelagzustand [%]",
