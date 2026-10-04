@@ -1496,8 +1496,8 @@ elif seite == "👤 Serviceinformation":
 
         st.markdown("### Was wurde festgestellt?")
         st.write(
-            "Die simulierte Zustandsentwicklung weist auf einen "
-            "bevorstehenden Wartungsbedarf der Bremsbeläge hin."
+            "Der zugrunde liegende Bremsbelagzustand befindet sich "
+            "im definierten Bereich für eine Serviceempfehlung."
         )
 
         st.markdown("### Besteht Handlungsbedarf?")
@@ -1517,10 +1517,9 @@ elif seite == "👤 Serviceinformation":
 
         st.markdown("### Was wurde festgestellt?")
         st.write(
-            "Die simulierte Zustandsentwicklung hat einen "
-            "kritischen Bereich erreicht."
+            "Der zugrunde liegende Bremsbelagzustand befindet sich "
+            "im definierten kritischen Bereich."
         )
-
         st.markdown("### Besteht Handlungsbedarf?")
         st.write(
             "Eine zeitnahe technische Prüfung wird empfohlen."
