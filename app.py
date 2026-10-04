@@ -1,4 +1,4 @@
-{import json
+import json
 import time
 import pandas as pd
 import plotly.graph_objects as go
