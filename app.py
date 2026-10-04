@@ -1453,7 +1453,7 @@ elif seite == "👤 Serviceinformation":
     with col2:
         st.metric(
             "Bremsbelagzustand",
-            f"{zustand:.0f} %"
+            f"{zustand:.1f}".replace(".", ",") + " %"
         )
     
     with col3:
