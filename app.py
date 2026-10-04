@@ -960,19 +960,19 @@ elif seite == "🔧 Bremszustand & Prognose":
             ) * 100
     
             st.metric(
-                "Erwarteter Wartungsbedarf",
+                "Erwartete Serviceempfehlung",
                 f"in ca. {format_km(wartungsbedarf_km)}"
             )
     
             st.write(
-                "**Prognosestatus:** Servicebedarf absehbar"
+                "**Prognosestatus:** Serviceempfehlung absehbar"
             )
             
             st.write(
                 f"**Hinweis:** Bei gleichbleibender synthetischer "
                 f"Zustandsentwicklung wird in ca. "
                 f"{format_km(wartungsbedarf_km)} "
-                f"ein Servicebedarf erwartet."
+                f"der Bereich „Service empfohlen“ erreicht."
             )
     
         else:
