@@ -1276,11 +1276,10 @@ elif seite == "📈 Simulation":
                 format_km(aktuelle_km)
             )
 
-            st.metric(
+           st.metric(
                 "Bremsbelagzustand",
-                f"{aktueller_zustand:.0f} %"
+                f"{aktueller_zustand:.1f}".replace(".", ",") + " %"
             )
-
             if twin["status"] == "Normal":
                 st.success(f"Status: {twin['status']}")
             elif twin["status"] == "Beobachten":
@@ -1300,7 +1299,7 @@ elif seite == "📈 Simulation":
 
             st.metric(
                 "Bremsbelagzustand",
-                f"{simulierter_zustand:.0f} %"
+                f"{st.session_state.simulierter_zustand:.1f}".replace(".", ",") + " %"
             )
 
             if simulierter_status == "Normal":
