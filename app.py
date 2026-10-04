@@ -1275,11 +1275,12 @@ elif seite == "📈 Simulation":
                 "Kilometerstand",
                 format_km(aktuelle_km)
             )
-
-           st.metric(
+            
+            st.metric(
                 "Bremsbelagzustand",
                 f"{aktueller_zustand:.1f}".replace(".", ",") + " %"
             )
+            
             if twin["status"] == "Normal":
                 st.success(f"Status: {twin['status']}")
             elif twin["status"] == "Beobachten":
