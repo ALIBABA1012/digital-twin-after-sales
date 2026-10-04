@@ -435,7 +435,7 @@ def show_vehicle_3d():
                 </span>
 
                 <span class="detail-value">
-                    {brake_condition:.1f} %
+                    {f"{brake_condition:.1f}".replace(".", ",")} %
                 </span>
 
             </div>
@@ -652,7 +652,7 @@ if seite == "🚗 Fahrzeugübersicht":
 
         st.write(
             f"**Bremsbelagzustand:** "
-            f"{twin['brake_condition_percent']:.1f} %"
+            f"{twin['brake_condition_percent']:.1f}".replace(".", ",") + " %"
         )
 
         st.write(
@@ -687,12 +687,18 @@ if seite == "🚗 Fahrzeugübersicht":
             mode="lines+markers",
             name="Bremsbelagzustand",
             customdata=[
-                f"{wert:,.0f}".replace(",", ".")
-                for wert in history_df["mileage_km"]
+                [
+                    f"{km:,.0f}".replace(",", "."),
+                    f"{zustand:.1f}".replace(".", ",")
+                ]
+                for km, zustand in zip(
+                    history_df["mileage_km"],
+                    history_df["brake_condition_percent"]
+                )
             ],
             hovertemplate=(
-                "Kilometerstand: %{customdata} km<br>"
-                "Bremsbelagzustand: %{y:.1f} %"
+                "Kilometerstand: %{customdata[0]} km<br>"
+                "Bremsbelagzustand: %{customdata[1]} %"
                 "<extra></extra>"
             )
         )
@@ -927,7 +933,7 @@ elif seite == "🔧 Bremszustand & Prognose":
 
         st.metric(
             "Bremsbelagzustand",
-            f"{twin['brake_condition_percent']:.1f} %"
+            f"{aktueller_zustand:.1f}".replace(".", ",") + " %"
         )
         
         st.write(f"**Status:** {twin['status']}")
@@ -1038,12 +1044,18 @@ elif seite == "🔧 Bremszustand & Prognose":
             mode="lines+markers",
             name="Historischer Verlauf",
             customdata=[
-                f"{wert:,.0f}".replace(",", ".")
-                for wert in historische_km
+                [
+                    f"{km:,.0f}".replace(",", "."),
+                    f"{zustand:.1f}".replace(".", ",")
+                ]
+                for km, zustand in zip(
+                    historische_km,
+                    historische_zustaende
+                )
             ],
             hovertemplate=(
-                "Kilometerstand: %{customdata} km<br>"
-                "Bremsbelagzustand: %{y:.0f} %"
+                "Kilometerstand: %{customdata[0]} km<br>"
+                "Bremsbelagzustand: %{customdata[1]} %"
                 "<extra></extra>"
             )
         )
@@ -1057,15 +1069,21 @@ elif seite == "🔧 Bremszustand & Prognose":
             mode="lines+markers",
             name="Prognose",
             customdata=[
-                f"{wert:,.0f}".replace(",", ".")
-                for wert in prognose_km
+                [
+                    f"{km:,.0f}".replace(",", "."),
+                    f"{zustand:.1f}".replace(".", ",")
+                ]
+                for km, zustand in zip(
+                    prognose_km,
+                    prognose_zustaende
+                )
             ],
             line=dict(
                 dash="dash"
             ),
             hovertemplate=(
-                "Kilometerstand: %{customdata} km<br>"
-                "Bremsbelagzustand: %{y:.0f} %"
+                "Kilometerstand: %{customdata[0]} km<br>"
+                "Bremsbelagzustand: %{customdata[1]} %"
                 "<extra></extra>"
             )
         )
@@ -1079,7 +1097,10 @@ elif seite == "🔧 Bremszustand & Prognose":
             mode="markers",
             name="Aktueller Zustand",
             customdata=[
-                format_km(twin["mileage_km"]).replace(" km", "")
+                [
+                    format_km(twin["mileage_km"]).replace(" km", ""),
+                    f"{twin['brake_condition_percent']:.1f}".replace(".", ",")
+                ]
             ],
             marker=dict(
                 size=15,
@@ -1090,8 +1111,8 @@ elif seite == "🔧 Bremszustand & Prognose":
                 )
             ),
             hovertemplate=(
-                "Kilometerstand: %{customdata} km<br>"
-                "Bremsbelagzustand: %{y:.0f} %"
+                "Kilometerstand: %{customdata[0]} km<br>"
+                "Bremsbelagzustand: %{customdata[1]} %"
                 "<extra></extra>"
             )
         )
