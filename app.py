@@ -1347,7 +1347,7 @@ elif seite == "📈 Simulation":
 
             st.warning(
                 "Die simulierte Zustandsentwicklung weist auf einen "
-                "bevorstehenden Wartungsbedarf hin."
+                "bevorstehenden Servicebedarf hin."
             )
 
             st.write(
