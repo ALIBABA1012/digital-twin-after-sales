@@ -114,8 +114,7 @@ def update_twin_state():
 
     twin["mileage_km"] += simulated_distance
 
-    # Synthetische Verschleißberechnung auf Basis
-    # der zentral definierten Verschleißrate
+    # Synthetische Verschleißberechnung auf Basis der zentral definierten Verschleißrate
     brake_wear = (
         simulated_distance / 1000
     ) * VERSCHLEISS_PRO_1000_KM
@@ -874,8 +873,7 @@ if seite == "🚗 Fahrzeugübersicht":
         service_df["Kilometerstand"].apply(format_km)
     )
 
-    # Englische Inhalte der bisherigen JSON-Datei
-    # für die sichtbare Oberfläche übersetzen
+    # Englische Inhalte der bisherigen JSON-Datei für die sichtbare Oberfläche übersetzen
     service_df["Service"] = service_df["Service"].replace({
         "Inspection": "Inspektion",
         "Brake inspection": "Bremsenprüfung"
@@ -922,10 +920,7 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     st.info("Demonstrator – ausschließlich synthetische Fahrzeugdaten")
 
-    # --------------------------------------------------
     # Aktueller Zustand und Prognose
-    # --------------------------------------------------
-
     col_current, col_prediction = st.columns(2)
 
     with col_current:
@@ -998,10 +993,7 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     st.divider()
 
-    # --------------------------------------------------
     # Zustandsverlauf und Prognose
-    # --------------------------------------------------
-
     st.subheader("📊 Verlauf und Prognose des Bremsbelagzustands")
 
     # Historische Werte
@@ -1163,10 +1155,7 @@ elif seite == "🔧 Bremszustand & Prognose":
 
     st.divider()
 
-    # --------------------------------------------------
     # Servicebewertung
-    # --------------------------------------------------
-
     st.subheader("🛠️ Servicebewertung")
 
     if twin["status"] == "Normal":
@@ -1219,10 +1208,7 @@ elif seite == "📈 Simulation":
         "und stellt kein reales physikalisches Verschleißmodell dar."
     )
 
-    # --------------------------------------------------
     # Simulationsparameter
-    # --------------------------------------------------
-
     aktuelle_km = twin["mileage_km"]
     aktueller_zustand = twin["brake_condition_percent"]
 
@@ -1251,10 +1237,7 @@ elif seite == "📈 Simulation":
         type="primary"
     )
 
-    # --------------------------------------------------
     # Simulation
-    # --------------------------------------------------
-
     if simulation_starten:
 
         verschleiss = (
@@ -1281,10 +1264,7 @@ elif seite == "📈 Simulation":
 
         st.divider()
 
-        # --------------------------------------------------
         # Vorher-Nachher-Vergleich
-        # --------------------------------------------------
-
         st.subheader("Ergebnis der Simulation")
 
         col_before, col_after = st.columns(2)
@@ -1346,10 +1326,7 @@ elif seite == "📈 Simulation":
 
         st.divider()
 
-        # --------------------------------------------------
         # Servicebewertung
-        # --------------------------------------------------
-
         st.subheader("Servicebewertung")
 
         if simulierter_status == "Normal":
@@ -1412,10 +1389,7 @@ elif seite == "👤 Serviceinformation":
 
     st.info("Demonstrator – ausschließlich synthetische Fahrzeugdaten")
 
-    # --------------------------------------------------
     # Daten auswählen
-    # --------------------------------------------------
-
     if st.session_state.simuliert:
         zustand = st.session_state.simulierter_zustand
         status = st.session_state.simulierter_status
@@ -1436,10 +1410,7 @@ elif seite == "👤 Serviceinformation":
             "Dargestellt wird der aktuelle Fahrzeugzustand."
         )
 
-    # --------------------------------------------------
     # Serviceübersicht
-    # --------------------------------------------------
-
     st.subheader("🔧 Bremsbelagzustand")
 
     col1, col2, col3 = st.columns(3)
@@ -1473,10 +1444,7 @@ elif seite == "👤 Serviceinformation":
     
     st.divider()
 
-    # --------------------------------------------------
     # Verständliche Kundeninformation
-    # --------------------------------------------------
-
     st.subheader("Kundeninformation")
 
     if status == "Normal":
